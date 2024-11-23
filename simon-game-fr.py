@@ -2,7 +2,6 @@ import pygame
 import random
 pygame.init()
 
-
 class Button:
     def __init__(self ,text ,width ,height ,color ,hover ,pos , elevation):
         #attribute
@@ -15,7 +14,7 @@ class Button:
         self.color = color
         self.hover = hover
         self.preessed = False
-         
+
         #top button
         print(pos[0],pos[1]-100)
         self.top_rect = pygame.Rect(pos,(width,height))
@@ -28,8 +27,6 @@ class Button:
         #text
         self.text_surf = my_font.render(text,True,(0, 0, 0))
         self.text_rect = self.text_surf.get_rect(center = self.top_rect.center)
-        
-        
         
     def draw(self):
         #top button location
@@ -44,7 +41,6 @@ class Button:
         screen.blit(self.text_surf,self.text_rect)
         mouse_pos = pygame.mouse.get_pos()
         self.click(mouse_pos)
-    
     
     def click(self,mouse_pos):
         if self.top_rect.collidepoint(mouse_pos):
@@ -64,9 +60,6 @@ class Button:
             self.top_color = self.color
             self.dynamic_elevation = self.elevation
                 
-                
-                
-                
 class Simon:
     def __init__(self ,count ,width ,height ,colors ,hover_color ,texts, poses):
         self.width = width
@@ -83,9 +76,6 @@ class Simon:
             #pygame.draw.rect(border_radius=15)
             #screen.blit(self.dic[i]["text_surf"],self.dic[i]["text_rect"])
 
-
-
-
 screen_height = 700
 screen_width = 700
 hover_colors = [[150,0,0],[0,150,0],[0,0,150],[150,150,0]]
@@ -99,13 +89,12 @@ clock = pygame.time.Clock()
 
 run = True
 while run:
-    
     for event in pygame.event.get():  
         if event.type == pygame.QUIT:
             run = False
     screen.fill((0,0,0))
     simon.draw()
-           
+
     pygame.display.update()
     clock.tick(60)
-pygame.quit()            
+pygame.quit()
