@@ -6,14 +6,12 @@ import sys
 pygame.init()
 
 class Button:
-    def __init__(self , index, text ,width ,height ,color ,hover_color ,pos , elevation):
+    def __init__(self , index, text, color ,hover_color ,pos , elevation):
         #attribute
         self.elevation = elevation
         self.dynamic_elevation = elevation
         self.original_y = pos[1]
         self.pos = pos
-        self.width = width
-        self.height = height
         self.color = color
         self.hover_color = hover_color
         self.text = text
@@ -21,16 +19,20 @@ class Button:
         self.preessed = False
 
         #top button
+        self.top_image = pygame.image.load(f"{text}.png").convert_alpha()
+        self.top_rect = self.top_image.get_rect(center = pos)
+        self.top_mask = pygame.mask.from_surface(self.top_image)
+        self.top_mask.fill()
         
-        self.top_rect = pygame.Rect(pos,(width,height))
-        self.top_color = color
         
         #bottom button
-        self.bottom_rect = pygame.Rect(pos[0],(pos[1]),width,height)
+        self.bottom_image = pygame.image.load(f"{text}.png").convert_alpha()
+        self.bottom_rect = self.bottom_image.get_rect(center = pos)
+        self.bottom_mask = pygame.mask.from_surface(self.bottom_image)
         self.bottom_color = (50,25,25)
-        
+
         #text
-        self.text_surf = my_font.render(text,True,(0, 0, 0))
+        self.text_surf = my_font.render(text,True,(225, 225, 225))
         self.text_rect = self.text_surf.get_rect(center = self.top_rect.center)
         
     def draw(self):
@@ -39,8 +41,7 @@ class Button:
         self.text_rect.center = self.top_rect.center
         
         #draw rect
-        pygame.draw.rect(screen,tuple(self.bottom_color),self.bottom_rect,border_radius=15)
-        pygame.draw.rect(screen,tuple(self.top_color),self.top_rect,border_radius=15)
+        screen.blit(self.top_image,self.pos)
         
         #centers and draw text 
         screen.blit(self.text_surf,self.text_rect)
@@ -65,23 +66,22 @@ class Button:
                 self.dynamic_elevation = self.elevation
                 if self.preessed == True:
                     # #------------------------
-                    # print(self.text,"click")
+                    print(self.text,"click")
                     # #------------------------
                     self.preessed = False  
                     simon.test_seq(self.index)
-                    print(self.text,"click")
+                    #-------------------------
+                    # print(self.text,"click")
+                    #-------------------------
                  
         else:
             self.dynamic_elevation = self.elevation
 
         self.draw()
             
-            
 class Simon:
-    def __init__(self, count, width, height, colors, hover_color, texts, poses, cnt):
+    def __init__(self, count,colors, hover_color, texts, poses, cnt):
         self.cnt = cnt
-        self.width = width
-        self.height = height
         self.colors = colors
         self.buttons = []
         self.text = texts
@@ -90,9 +90,9 @@ class Simon:
         self.generate = True
         self.collect_input = True
         self.curr_seq = []
-        
+
         for i in range(0, count):
-            self.buttons.append(Button(i, texts[i], width, height, colors[i] ,hover_color[i], poses[i], 20))
+            self.buttons.append(Button(i, texts[i],colors[i] ,hover_color[i], poses[i], 10))
             
     def draw(self):
         mouse_pos = pygame.mouse.get_pos()
@@ -101,24 +101,24 @@ class Simon:
 
     def generate_seq(self):
         self.cnt = 0
-        
-        memory.append(random.randrange(0,4))
+
+        memory.append(random.randrange(0,self.count))
         self.play_seq()
-        
+
         # #-----------------
-        # print([keybinds[m] for m in memory])
+        print([keybinds[m] for m in memory])
         # #-----------------
         return
     def play_seq(self):
         for button_idx in memory:
             curr_button = self.buttons[button_idx]
-            
+
             curr_button.hover()
             pygame.display.update()
             time.sleep(0.5)
             curr_button.unhover()
             time.sleep(0.5)
-        
+
         return
     def play(self):
 
@@ -126,14 +126,13 @@ class Simon:
             self.generate_seq()
             self.generate = False
 
-
     def test_seq(self, index):
         if memory[self.cnt] == index:
             self.cnt += 1
-            
+
         elif memory[self.cnt] != index:
             exit()
-            
+
         if self.cnt >= len(memory):
             self.generate = True
 
@@ -141,14 +140,15 @@ cnt = 0
 memory = []
 screen_height = 700
 screen_width = 700
-colors_list = [[150,0,0],[0,150,0],[0,0,150],[150,150,0]]
-hover_colors = [[225,0,0],[0,225,0],[0,0,225],[225,225,0]]
-locations = [(100,100),(100,400),(400,400),(400,100)]
-keybinds = ["R","G","B","Y"]
+colors_list = [[150,0,0],[0,150,0],[0,0,150],[150,150,0],[200,100,50]]
+hover_colors = [[225,0,0],[0,225,0],[0,0,225],[225,225,0],[225,100,50]]
+locations = [(460,345),(210,200),(405,185),(180,415),(342,455)]
+keybinds = ["red","green","blue","yellow","orange"]
 my_font = pygame.font.SysFont("impact",30)
-simon = Simon(4 ,200, 200, colors_list, hover_colors, keybinds, locations,cnt)
-# game = Game(memory, keybinds)
 screen = pygame.display.set_mode((screen_width, screen_height))
+simon = Simon(5, colors_list, hover_colors, keybinds, locations,cnt)
+# game = Game(memory, keybinds)
+
 clock = pygame.time.Clock()
 
 run = True
@@ -160,10 +160,8 @@ while run:
 
     simon.draw()
     pygame.display.update()
-
     simon.play()
     pygame.display.update()
 
     clock.tick(60)
-
 pygame.quit()
